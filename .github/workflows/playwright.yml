@@ -1,26 +1,31 @@
 name: Playwright CI
 
 on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Tag dos testes a serem executados (ex: @smoke, @regression)'
-        required: false
-        default: '@smoke'
-      browser:
-        description: 'Browser a ser usado (chromium, firefox, webkit)'
-        required: false
-        default: 'chromium'
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag dos testes (ex: @smoke, @regression)'
+        required: false
+        default: '@smoke'
+      browser:
+        description: 'Browser (chromium, firefox, webkit)'
+        required: false
+        default: 'chromium'
 
 jobs:
   test:
     name: Executar testes do Playwright
     runs-on: ubuntu-latest
     timeout-minutes: 60
+
+    # ✅ Defaults seguros: quando não for workflow_dispatch, usa chromium e tag vazia
+    env:
+      TAG: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.tag) || '' }}
+      BROWSER: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.browser) || 'chromium' }}
 
     steps:
       - name: 📥 Checkout do código
@@ -38,14 +43,15 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: 🧪 Executar testes Playwright
+        shell: bash
         run: |
-          TAG="${{ github.event.inputs.tag }}"
-          BROWSER="${{ github.event.inputs.browser }}"
-
-          if [ "$TAG" ]; then
-            npx playwright test --grep "$TAG" --project="$BROWSER"
+          echo "TAG='${TAG}'  BROWSER='${BROWSER}'"
+          # fallback adicional no shell, só por segurança
+          if [ -z "${BROWSER}" ]; then BROWSER="chromium"; fi
+          if [ -n "${TAG}" ]; then
+            npx playwright test --grep "${TAG}" --project="${BROWSER}"
           else
-            npx playwright test --project="$BROWSER"
+            npx playwright test --project="${BROWSER}"
           fi
 
       - name: 📂 Publicar relatório como artefato
