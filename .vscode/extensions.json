@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",      // Formatação automática
+    "davidanson.vscode-markdownlint", // Validação Markdown
+    "ms-playwright.playwright",    // Suporte ao Playwright
+    "dbaeumer.vscode-eslint",      // ESLint para JS/TS
+    "github.vscode-github-actions", // Sintaxe e autocomplete para workflows .yml
+    "streetsidesoftware.code-spell-checker" // Correção ortográfica leve
+  ]
+}
