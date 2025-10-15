@@ -82,7 +82,7 @@ npm create playwright@latest
 
 | Pergunta CLI                                 | Resposta sugerida | Observação                                 |
 | -------------------------------------------- | ----------------- | ------------------------------------------ |
-| Do you want to use TypeScript or JavaScript? | **TypeScript**    | melhor para didática                       |
+| Do you want to use TypeScript or JavaScript? | **JavaScript**    | melhor para didática                       |
 | Where to put your end‑to‑end tests?          | **tests**         | fácil de lembrar                           |
 | Add a GitHub Actions workflow?               | **Yes**           | já gera `.github/workflows/playwright.yml` |
 | Install Playwright browsers?                 | **Yes**           | necessário pro CI e local                  |
