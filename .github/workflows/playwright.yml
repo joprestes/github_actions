@@ -7,6 +7,10 @@ on:
         description: 'Tag dos testes a serem executados (ex: @smoke, @regression)'
         required: false
         default: '@smoke'
+      browser:
+        description: 'Browser a ser usado (chromium, firefox, webkit)'
+        required: false
+        default: 'chromium'
   push:
     branches: [ main ]
   pull_request:
@@ -35,10 +39,13 @@ jobs:
 
       - name: 🧪 Executar testes Playwright
         run: |
-          if [ "${{ github.event.inputs.tag }}" != "" ]; then
-            npx playwright test --grep "${{ github.event.inputs.tag }}"
+          TAG="${{ github.event.inputs.tag }}"
+          BROWSER="${{ github.event.inputs.browser }}"
+
+          if [ "$TAG" ]; then
+            npx playwright test --grep "$TAG" --project="$BROWSER"
           else
-            npx playwright test
+            npx playwright test --project="$BROWSER"
           fi
 
       - name: 📂 Publicar relatório como artefato
