@@ -3,10 +3,11 @@
 Este README ensina você (e seus alunos do **Projeto Crescer – Qualidade de Software**) a:
 
 1. **Criar um repositório do zero no GitHub**
-2. **Inicializar um projeto de testes com Playwright** respondendo ao **assistente interativo da CLI**
-3. **Executar os testes localmente** com `npx playwright test`
-4. **Rodar os testes no GitHub Actions** (com parâmetro para filtrar por tag)
+2. **Inicializar um projeto de testes com Playwright**
+3. **Executar os testes localmente**
+4. **Rodar os testes no GitHub Actions**
 5. **Publicar o relatório de testes no GitHub Pages**
+6. **Usar tags (@smoke, @regression) nos testes**
 
 ---
 
@@ -36,7 +37,9 @@ github_actions/
 │   ├── settings.json
 │   └── extensions.json
 ├── docs/                         👈 Documentação técnica do workflow
-│   └── github_actions_explicado.md
+│   ├── github_actions_explicado.md
+│   ├── publicando_relatorio_github_pages.md
+│   └── usando_tags_nos_testes.md
 ├── tests/                        👈 Testes Playwright
 │   └── example.spec.ts
 ├── playwright.config.ts
@@ -46,20 +49,22 @@ github_actions/
 
 ---
 
-## 1) Criar o repositório no GitHub (do zero)
+<details>
+<summary><h2>1️⃣ Criar o repositório no GitHub (do zero)</h2></summary>
 
 1. Acesse **https://github.com/new**
 2. **Repository name:** `github_actions`
 3. **Visibility:** `Public`
-4. **⚠️ Importante:** _Não_ selecione criar README, .gitignore ou licença automático
+4. ⚠️ **Importante:** _Não_ selecione criar README, .gitignore ou licença automático
 5. Clique em **Create repository**
 6. Copie a **URL HTTPS** do repositório (ex: `https://github.com/joprestes/github_actions.git`)
 
+</details>
+
 ---
 
-## 2) Preparar o projeto local e conectar ao GitHub
-
-No terminal:
+<details>
+<summary><h2>2️⃣ Preparar o projeto local e conectar ao GitHub</h2></summary>
 
 ```bash
 mkdir github_actions && cd github_actions
@@ -69,42 +74,35 @@ git remote add origin https://github.com/{{seu_usuario}}/github_actions.git
 
 Verifique com `git remote -v` para confirmar.
 
+</details>
+
 ---
 
-## 3) Inicializar projeto Node e instalar Playwright
+<details>
+<summary><h2>3️⃣ Inicializar projeto Node e instalar Playwright</h2></summary>
 
 ```bash
 npm init -y
 npm create playwright@latest
 ```
 
-### 3.2 Respostas recomendadas no assistente (CLI)
+### 💬 Respostas recomendadas no assistente (CLI)
 
 | Pergunta CLI                                 | Resposta sugerida | Observação                                 |
 | -------------------------------------------- | ----------------- | ------------------------------------------ |
-| Do you want to use TypeScript or JavaScript? | **JavaScript**    | melhor para didática                       |
+| Do you want to use TypeScript or JavaScript? | **JavaScript**    | melhor para iniciantes                     |
 | Where to put your end‑to‑end tests?          | **tests**         | fácil de lembrar                           |
 | Add a GitHub Actions workflow?               | **Yes**           | já gera `.github/workflows/playwright.yml` |
 | Install Playwright browsers?                 | **Yes**           | necessário pro CI e local                  |
 | Install dependencies?                        | **Yes**           | deixa tudo pronto                          |
 | Generate example tests?                      | **Yes**           | ajuda a validar logo `npx playwright test` |
 
-Após isso, sua estrutura ficará algo como:
-
-```
-.github/
-  workflows/
-    playwright.yml
-tests/
-  example.spec.ts
-playwright.config.ts
-package.json
-...
-```
+</details>
 
 ---
 
-## 4) Primeiro commit e push
+<details>
+<summary><h2>4️⃣ Primeiro commit e push</h2></summary>
 
 ```bash
 git add .
@@ -113,27 +111,36 @@ git branch -M main
 git push -u origin main
 ```
 
+</details>
+
 ---
 
-## 5) Executar testes localmente
+<details>
+<summary><h2>5️⃣ Executar testes localmente</h2></summary>
 
 ```bash
 npx playwright test
 npx playwright show-report
 ```
 
+</details>
+
 ---
 
-## 6) Rodar no GitHub Actions (workflow com tag e deploy)
+<details>
+<summary><h2>6️⃣ Rodar no GitHub Actions (workflow com tag e deploy)</h2></summary>
 
 Use este `playwright.yml` no caminho `.github/workflows/playwright.yml`.
 
 Para entender **cada linha desse arquivo**, veja a documentação completa em:
 👉 [docs/github_actions_explicado.md](docs/github_actions_explicado.md)
 
+</details>
+
 ---
 
-## 7) Ativar o GitHub Pages (uma vez)
+<details>
+<summary><h2>7️⃣ Ativar o GitHub Pages (uma vez)</h2></summary>
 
 1. Vá em **Settings → Pages**
 2. Em **Build and deployment**, selecione **Source: GitHub Actions**
@@ -141,22 +148,41 @@ Para entender **cada linha desse arquivo**, veja a documentação completa em:
 4. Após um funcionamento correto do workflow, o relatório estará disponível em:
 
 ```
-https://joprestes.github.io/github_actions/
+https://seu-usuario.github.io/github_actions/
 ```
 
----
-
-## 8) Execução manual com tag pelo UI
-
-1. Vá em **Actions** → selecione **Playwright CI**
-2. Clique em **Run workflow**
-3. No campo **Tag de execução**, coloque algo como `@smoke` (ou deixe vazio)
-4. Clique **Run workflow**
-5. Aguarde; relatório será publicado no GitHub Pages
+</details>
 
 ---
 
-## 9) Problemas comuns
+<details>
+<summary><h2>🏷️ Usando tags nos testes Playwright</h2></summary>
+
+As tags permitem **filtrar execuções** tanto localmente quanto no GitHub Actions.
+Você pode marcar seus testes assim:
+
+```ts
+test("@smoke valida título da página", async ({ page }) => {
+  await page.goto("https://playwright.dev/");
+  await expect(page).toHaveTitle(/Playwright/);
+});
+```
+
+E rodar apenas os testes marcados:
+
+```bash
+npx playwright test --grep "@smoke"
+```
+
+📖 Veja o guia completo em
+➡️ [docs/usando_tags_nos_testes.md](docs/usando_tags_nos_testes.md)
+
+</details>
+
+---
+
+<details>
+<summary><h2>🧰 Problemas comuns</h2></summary>
 
 - “divergent branches” ao `git pull` → use `git pull --rebase origin main`
 - Workflow não dispara → verifique se `.github/workflows/playwright.yml` existe e foi enviado para `main`
@@ -164,25 +190,7 @@ https://joprestes.github.io/github_actions/
 - Navegadores faltando no CI → garanta `npx playwright install --with-deps` antes dos testes
 - Instabilidade em testes → adicionar `--retries=2` ou configurar no `playwright.config.ts`
 
----
-
-## 🧷 Resumo de comandos úteis
-
-```bash
-git init
-git remote add origin https://github.com/joprestes/github_actions.git
-
-npm init -y
-npm create playwright@latest
-
-npx playwright test
-npx playwright show-report
-
-git add .
-git commit -m "feat: projeto inicial com Playwright e workflow do GitHub Actions"
-git branch -M main
-git push -u origin main
-```
+</details>
 
 ---
 
@@ -195,3 +203,12 @@ Esse documento explica de forma **simples e passo a passo** o conteúdo do arqui
 
 > 💡 **Para estudo:**
 > O arquivo [`playwright_original.yml`](.github/workflows/playwright_original.yml) mostra a versão gerada automaticamente pelo Playwright, antes das personalizações feitas no projeto.
+
+---
+
+## ✨ Créditos
+
+Este material foi criado por **Joelma Prestes** como parte do curso
+**Projeto Crescer – Qualidade de Software**, com o objetivo de ensinar de forma prática e acessível o uso de **Playwright** e **GitHub Actions**.
+
+> 💡 Material didático livre para uso educacional, com a devida menção à autora.
