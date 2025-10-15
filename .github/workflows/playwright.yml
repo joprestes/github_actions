@@ -6,7 +6,7 @@ on:
       tag:
         description: 'Tag dos testes a serem executados (ex: @smoke, @regression)'
         required: false
-        default: ''
+        default: '@smoke'
   push:
     branches: [ main ]
   pull_request:
