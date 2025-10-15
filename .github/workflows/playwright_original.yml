@@ -1,0 +1,56 @@
+# 🔹 Este é o pipeline padrão criado automaticamente pelo Playwright.
+# 🔹 Ele roda os testes em cada push ou pull request nas branches 'main' e 'master'.
+
+name: Playwright Tests
+
+on:
+  # 🧭 Define quando o workflow será acionado:
+  # - Ao fazer push nas branches main/master
+  # - Ao abrir PR para main/master
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  # 🔹 "jobs" são os blocos principais de execução do pipeline.
+  # Aqui há apenas um job chamado "test".
+  test:
+    # 🕒 Tempo máximo de execução
+    timeout-minutes: 60
+
+    # 💻 Sistema operacional em que o job roda
+    runs-on: ubuntu-latest
+
+    steps:
+      # 📥 Baixa o código-fonte do repositório
+      - uses: actions/checkout@v4
+
+      # ⚙️ Configura a versão do Node.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      # 📦 Instala as dependências do projeto
+      - name: Install dependencies
+        run: npm ci
+
+      # 🌐 Instala os browsers necessários para o Playwright
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      # 🧪 Executa os testes automatizados do Playwright
+      - name: Run Playwright tests
+        run: npx playwright test
+
+      # 📂 Publica o relatório dos testes como artefato no GitHub Actions
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+# 💬 Este arquivo é útil para os alunos verem como é o pipeline padrão
+# gerado automaticamente pelo Playwright antes de personalizarmos ele
+# para incluir execução por tag e publicação no GitHub Pages.

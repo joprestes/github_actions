@@ -128,7 +128,7 @@ npx playwright show-report
 
 Use este `playwright.yml` no caminho `.github/workflows/playwright.yml`.
 
-Para entender **cada linha desse arquivo**, veja a documentação completa em:  
+Para entender **cada linha desse arquivo**, veja a documentação completa em:
 👉 [docs/github_actions_explicado.md](docs/github_actions_explicado.md)
 
 ---
@@ -188,7 +188,10 @@ git push -u origin main
 
 ## 📘 Documentação Técnica do Workflow
 
-Quer entender o que **cada parte do arquivo `.yml` faz**?  
+Quer entender o que **cada parte do arquivo `.yml` faz**?
 ➡️ Veja: [docs/github_actions_explicado.md](docs/github_actions_explicado.md)
 
 Esse documento explica de forma **simples e passo a passo** o conteúdo do arquivo `playwright.yml`, ideal para quem está começando com GitHub Actions.
+
+> 💡 **Para estudo:**
+> O arquivo [`playwright_original.yml`](.github/workflows/playwright_original.yml) mostra a versão gerada automaticamente pelo Playwright, antes das personalizações feitas no projeto.
