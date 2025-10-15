@@ -6,7 +6,7 @@ test("@smoke has title", async ({ page }) => {
   await expect(page).toHaveTitle(/Playwright/);
 });
 
-test("get started link", async ({ page }) => {
+test("@regression get started link", async ({ page }) => {
   await page.goto("https://playwright.dev/");
   await page.getByRole("link", { name: "Get started" }).click();
   await expect(
