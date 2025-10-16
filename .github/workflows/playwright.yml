@@ -1,10 +1,22 @@
 name: Playwright CI
 
+# ---------------------------------------------------------
+# 🧩 ENTENDENDO ESTE ARQUIVO
+# ---------------------------------------------------------
+# Este workflow executa testes automatizados com Playwright
+# e publica o relatório no GitHub Pages.
+# ---------------------------------------------------------
+
 on:
+  # 🚀 Dispara automaticamente quando há um push na branch main
   push:
     branches: [ main ]
+
+  # 🧩 Também roda em Pull Requests abertos para a branch main
   pull_request:
     branches: [ main ]
+
+  # ▶️ Pode ser executado manualmente via interface do GitHub
   workflow_dispatch:
     inputs:
       tag:
@@ -15,6 +27,22 @@ on:
         description: 'Browser (chromium, firefox, webkit)'
         required: false
         default: 'chromium'
+
+# ---------------------------------------------------------
+# ⚙️ CONTROLE DE CONCORRÊNCIA
+# ---------------------------------------------------------
+# Garante que não ocorram execuções simultâneas conflitantes.
+# O parâmetro "group" define o grupo de execução (aqui: pages).
+# O "cancel-in-progress" determina se uma nova execução deve
+# cancelar a anterior do mesmo grupo.
+# ---------------------------------------------------------
+# Exemplo:
+# - true  → cancela a execução anterior e roda apenas a nova.
+# - false → mantém a execução anterior até o fim.
+# ---------------------------------------------------------
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   test:
@@ -28,20 +56,41 @@ jobs:
       BROWSER: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.browser) || 'chromium' }}
 
     steps:
+      # ---------------------------------------------------------
+      # 📥 1. Checkout do código
+      # Baixa o código do repositório para o ambiente do GitHub Actions.
+      # ---------------------------------------------------------
       - name: 📥 Checkout do código
         uses: actions/checkout@v4
 
+      # ---------------------------------------------------------
+      # ⚙️ 2. Configurar Node.js
+      # Instala a versão LTS mais recente do Node.js.
+      # ---------------------------------------------------------
       - name: ⚙️ Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
 
+      # ---------------------------------------------------------
+      # 📦 3. Instalar dependências do projeto
+      # O npm ci instala as dependências com base no package-lock.json.
+      # ---------------------------------------------------------
       - name: 📦 Instalar dependências
         run: npm ci
 
+      # ---------------------------------------------------------
+      # 🌐 4. Instalar browsers do Playwright
+      # Inclui navegadores Chromium, Firefox e WebKit.
+      # ---------------------------------------------------------
       - name: 🌐 Instalar browsers do Playwright
         run: npx playwright install --with-deps
 
+      # ---------------------------------------------------------
+      # 🧪 5. Executar testes Playwright
+      # Usa as variáveis TAG e BROWSER configuradas no topo.
+      # Se TAG estiver definida, executa apenas os testes filtrados.
+      # ---------------------------------------------------------
       - name: 🧪 Executar testes Playwright
         shell: bash
         run: |
@@ -54,6 +103,10 @@ jobs:
             npx playwright test --project="${BROWSER}"
           fi
 
+      # ---------------------------------------------------------
+      # 📂 6. Publicar relatório como artefato
+      # Armazena o relatório HTML gerado, disponível na aba "Actions".
+      # ---------------------------------------------------------
       - name: 📂 Publicar relatório como artefato
         if: always()
         uses: actions/upload-artifact@v4
@@ -62,6 +115,9 @@ jobs:
           path: playwright-report/
           retention-days: 30
 
+  # ---------------------------------------------------------
+  # 🚀 JOB DE DEPLOY NO GITHUB PAGES
+  # ---------------------------------------------------------
   deploy:
     name: Publicar relatório no GitHub Pages
     runs-on: ubuntu-latest
@@ -69,12 +125,20 @@ jobs:
     if: always()
 
     steps:
+      # ---------------------------------------------------------
+      # 📥 1. Baixar relatório gerado no job anterior
+      # ---------------------------------------------------------
       - name: 📥 Baixar relatório gerado
         uses: actions/download-artifact@v4
         with:
           name: playwright-report
           path: playwright-report
 
+      # ---------------------------------------------------------
+      # 🚀 2. Publicar relatório no branch gh-pages
+      # Essa ação envia o conteúdo do relatório para a branch gh-pages,
+      # permitindo que o relatório seja acessado via GitHub Pages.
+      # ---------------------------------------------------------
       - name: 🚀 Publicar relatório no branch gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
